@@ -1,19 +1,12 @@
 defmodule MongoDB do
-  use Application.Behaviour
-
   defrecord Collection, pid: nil, db: nil, name: nil
 
   def start do
     :application.start :bson
     :application.start :mongodb
   end
-  def start(_type, [host, port]), do: start(_type, [host, port, nil])
-  def start(_type, [host, port, options]) do 
-    start
-    connect host, port, options
-  end
 
-  def stop(state // nil) do
+  def stop do
     :application.stop :bson
     :application.stop :mongodb
   end
