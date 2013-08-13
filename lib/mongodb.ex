@@ -1,16 +1,6 @@
 defmodule MongoDB do
   defrecord Collection, pid: nil, db: nil, name: nil
 
-  def start do
-    :application.start :bson
-    :application.start :mongodb
-  end
-
-  def stop do
-    :application.stop :bson
-    :application.stop :mongodb
-  end
-
   def connect(host, port, options // []) do
     :mongo_connection.start_link({host, port}, options)
   end

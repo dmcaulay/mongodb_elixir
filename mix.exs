@@ -10,7 +10,7 @@ defmodule MongoDB.Mixfile do
 
   # Configuration for the OTP application
   def application do
-    []
+    [ applications: [:bson, :mongodb] ]
   end
 
   # Returns the list of dependencies in the format:

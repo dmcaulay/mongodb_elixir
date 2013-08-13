@@ -5,16 +5,6 @@ defmodule MongoDBTest do
 
   use ExUnit.Case
 
-  setup_all do
-    MongoDB.start
-    :ok
-  end
-
-  teardown_all do
-    MongoDB.stop
-    :ok
-  end
-
   test "pid returned if successful connection" do
     res = MongoDB.connect('127.0.0.1', 27017)
     assert elem(res, 0) == :ok
