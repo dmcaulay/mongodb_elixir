@@ -1,0 +1,2 @@
+defmodule MongoDB do
+end

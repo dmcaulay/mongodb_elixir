@@ -1,3 +1,3 @@
-# MongodbElixir
+# MongoDB
 
-** TODO: Add description **
+** TODO: small wrapper around mongodb-erlang **

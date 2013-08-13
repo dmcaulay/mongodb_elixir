@@ -1,4 +1,4 @@
-defmodule MongodbElixir.Mixfile do
+defmodule MongoDB.Mixfile do
   use Mix.Project
 
   def project do

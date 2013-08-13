@@ -1,2 +1,0 @@
-defmodule MongodbElixir do
-end

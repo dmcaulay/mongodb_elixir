@@ -1,4 +1,4 @@
-defmodule MongodbElixirTest do
+defmodule MongoDBTest do
   use ExUnit.Case
 
   test "the truth" do
