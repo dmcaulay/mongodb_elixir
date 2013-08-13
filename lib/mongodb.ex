@@ -27,33 +27,41 @@ defmodule MongoDB do
     {:ok, Collection.new pid: pid, db: db, name: name}
   end
 
-  def insert(collection, docs) do
-    exec collection, fn ->
-      docs 
-      |> to_tuples 
-      |> mongo_insert(collection.name) 
-      |> to_keywords
-    end
+  def insert(collection, docs = [h | _]) when is_list(h) do
+    exec collection, fn -> do_insert(collection, docs) end
+  end
+  def insert(collection, docs = [h | _]) when is_record(h) do
+    insert collection, Enum.map(docs, fn(x) -> x.to_keywords end)
+  end
+  def insert(collection, doc), when: is_record(doc), do: insert(collection, [doc.to_keywords])
+  def insert(collection, doc), do: insert(collection, [doc])
+  defp do_insert(collection, docs) do
+    docs 
+    |> to_tuples 
+    |> mongo_insert(collection.name) 
+    |> to_keywords
   end
   defp mongo_insert(docs, name), do: :mongo.insert(name, docs)
 
-  def find(collection, query // []) do
-    exec collection, fn ->
-      query 
-      |> to_tuple 
-      |> mongo_find(collection.name) 
-      |> :mongo_cursor.rest 
-      |> to_keywords
-    end
+  def find(collection, query // {}) do
+    exec collection, fn -> do_find(collection, query) end
+  end
+  defp do_find(collection, query) do
+    query 
+    |> to_tuple 
+    |> mongo_find(collection.name) 
+    |> :mongo_cursor.rest 
+    |> to_keywords
   end
   defp mongo_find(q, name), do: :mongo.find(name, q)
 
-  def delete(collection, query // []) do
-    exec collection, fn ->
-      query 
-      |> to_tuple 
-      |> mongo_delete(collection.name)
-    end
+  def delete(collection, query // {}) do
+    exec collection, fn -> do_delete(collection, query) end
+  end
+  defp do_delete(collection, query) do
+    query 
+    |> to_tuple 
+    |> mongo_delete(collection.name)
   end
   defp mongo_delete(q, name), do: :mongo.delete(name, q)
 

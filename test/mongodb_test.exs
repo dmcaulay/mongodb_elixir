@@ -47,13 +47,13 @@ defmodule MongoDBTest do
     {:ok, collection} = MongoDB.get_collection('127.0.0.1', 27017, :test, :docs)
     assert MongoDB.delete(collection) == :ok
     to_save = TestObject.new name: "test", data: 2
-    MongoDB.insert(collection, [to_save.to_keywords])
+    MongoDB.insert(collection, [to_save])
     to_save_2 = TestObject.new name: "not_test", data: 1
-    MongoDB.insert(collection, [to_save_2.to_keywords])
+    MongoDB.insert(collection, to_save_2)
     to_save_3 = TestObject.new name: "test", data: 3
-    MongoDB.insert(collection, [to_save_3.to_keywords])
+    MongoDB.insert(collection, to_save_3)
     to_save_4 = TestObject.new name: "not_test", data: -1
-    MongoDB.insert(collection, [to_save_4.to_keywords])
+    MongoDB.insert(collection, to_save_4)
     results = MongoDB.find(collection, {:'$query', {}, :'$orderby', {:data, 1}})
     assert Enum.map(results, TestObject.new &1) == [to_save_4,to_save_2,to_save,to_save_3] 
   end
