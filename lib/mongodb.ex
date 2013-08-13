@@ -1,14 +1,29 @@
 defmodule MongoDB do
   defrecord Collection, pid: nil, db: nil, name: nil
 
+  @connections :mongodb_connections
+
   def connect(name, host, port, options // []) do
+    check_table
     {:ok, pid} = :mongo_connection.start_link({host, port}, options)
-    Process.put name, pid
+    set_connection name, pid
     :ok
+  end
+  defp check_table do
+    if :ets.info(@connections) == :undefined do
+      :ets.new(@connections, [:set, :named_table, { :read_concurrency, true }])
+    end
+  end
+  defp set_connection(name, pid) do
+    :ets.insert(@connections, {name, pid})
   end
 
   def get_collection(connection_name, db, name) do 
-    {:ok, Collection.new pid: Process.get(connection_name), db: db, name: name}
+    {:ok, Collection.new pid: get_connection(connection_name), db: db, name: name}
+  end
+  defp get_connection(name) do
+    [{_,connection}] = :ets.lookup(@connections, name)
+    connection
   end
 
   def insert(collection, docs = [h | _]) when is_list(h) do
