@@ -1,12 +1,19 @@
 defmodule MongoDB do
+  use Application.Behaviour
+
   defrecord Collection, pid: nil, db: nil, name: nil
 
-  def init do
+  def start do
     :application.start :bson
     :application.start :mongodb
   end
+  def start(_type, [host, port]), do: start(_type, [host, port, nil])
+  def start(_type, [host, port, options]) do 
+    start
+    connect host, port, options
+  end
 
-  def shutdown do
+  def stop(state // nil) do
     :application.stop :bson
     :application.stop :mongodb
   end
@@ -30,11 +37,11 @@ defmodule MongoDB do
   def insert(collection, docs = [h | _]) when is_list(h) do
     exec collection, fn -> do_insert(collection, docs) end
   end
-  def insert(collection, docs = [h | _]) when is_record(h) do
+  def insert(collection, doc) when is_record(doc), do: insert(collection, [doc.to_keywords])
+  def insert(collection, doc = [{_,_}|_]), do: insert(collection, [doc])
+  def insert(collection, docs) do
     insert collection, Enum.map(docs, fn(x) -> x.to_keywords end)
   end
-  def insert(collection, doc), when: is_record(doc), do: insert(collection, [doc.to_keywords])
-  def insert(collection, doc), do: insert(collection, [doc])
   defp do_insert(collection, docs) do
     docs 
     |> to_tuples 

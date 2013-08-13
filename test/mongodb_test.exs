@@ -6,12 +6,12 @@ defmodule MongoDBTest do
   use ExUnit.Case
 
   setup_all do
-    MongoDB.init
+    MongoDB.start
     :ok
   end
 
   teardown_all do
-    MongoDB.shutdown
+    MongoDB.stop
     :ok
   end
 
@@ -49,7 +49,7 @@ defmodule MongoDBTest do
     to_save = TestObject.new name: "test", data: 2
     MongoDB.insert(collection, [to_save])
     to_save_2 = TestObject.new name: "not_test", data: 1
-    MongoDB.insert(collection, to_save_2)
+    MongoDB.insert(collection, to_save_2.to_keywords)
     to_save_3 = TestObject.new name: "test", data: 3
     MongoDB.insert(collection, to_save_3)
     to_save_4 = TestObject.new name: "not_test", data: -1
