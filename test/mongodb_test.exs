@@ -5,21 +5,19 @@ defmodule MongoDBTest do
 
   use ExUnit.Case
 
-  test "pid returned if successful connection" do
-    res = MongoDB.connect('127.0.0.1', 27017)
-    assert elem(res, 0) == :ok
-    assert is_pid(elem(res, 1))
+  setup do
+    MongoDB.connect(:db, '127.0.0.1', 27017)
   end
 
   test "collection returned if successful connection" do
-    {:ok, collection} = MongoDB.get_collection('127.0.0.1', 27017, :test, :docs)
+    {:ok, collection} = MongoDB.get_collection(:db, :test, :docs)
     assert is_pid(collection.pid)
     assert collection.db == :test
     assert collection.name == :docs 
   end
 
   test "saving an object in the db" do
-    {:ok, collection} = MongoDB.get_collection('127.0.0.1', 27017, :test, :docs)
+    {:ok, collection} = MongoDB.get_collection(:db, :test, :docs)
     assert MongoDB.delete(collection) == :ok
     to_save = TestObject.new name: "test", data: "this is fun"
     [stored] = MongoDB.insert(collection, [to_save.to_keywords])
@@ -34,7 +32,7 @@ defmodule MongoDBTest do
   end
 
   test "sorting results" do
-    {:ok, collection} = MongoDB.get_collection('127.0.0.1', 27017, :test, :docs)
+    {:ok, collection} = MongoDB.get_collection(:db, :test, :docs)
     assert MongoDB.delete(collection) == :ok
     to_save = TestObject.new name: "test", data: 2
     MongoDB.insert(collection, [to_save])
@@ -47,5 +45,4 @@ defmodule MongoDBTest do
     results = MongoDB.find(collection, {:'$query', {}, :'$orderby', {:data, 1}})
     assert Enum.map(results, TestObject.new &1) == [to_save_4,to_save_2,to_save,to_save_3] 
   end
-
 end

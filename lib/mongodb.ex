@@ -1,20 +1,14 @@
 defmodule MongoDB do
   defrecord Collection, pid: nil, db: nil, name: nil
 
-  def connect(host, port, options // []) do
-    :mongo_connection.start_link({host, port}, options)
+  def connect(name, host, port, options // []) do
+    {:ok, pid} = :mongo_connection.start_link({host, port}, options)
+    Process.put name, pid
+    :ok
   end
 
-  def get_collection(host, port, db, name, options // []) do
-    res = connect host, port, options
-    case res do
-      {:ok, pid} -> get_collection pid, db, name
-      _ -> res
-    end
-  end
-
-  def get_collection(pid, db, name) do 
-    {:ok, Collection.new pid: pid, db: db, name: name}
+  def get_collection(connection_name, db, name) do 
+    {:ok, Collection.new pid: Process.get(connection_name), db: db, name: name}
   end
 
   def insert(collection, docs = [h | _]) when is_list(h) do
