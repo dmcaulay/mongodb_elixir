@@ -16,6 +16,8 @@ defmodule MongoDB.Mixfile do
   # Returns the list of dependencies in the format:
   # { :foobar, "~> 0.1", git: "https://github.com/elixir-lang/foobar.git" }
   defp deps do
-    []
+    [
+      { :'mongodb', "v0.3.2", git: "https://github.com/dmcaulay/mongodb-erlang.git", branch: "refactor", tag: "v0.3.2" }
+    ]
   end
 end
